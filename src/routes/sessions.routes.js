@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const { config } = require('../config/config');
+const { usersModel } = require('../../dao/models/usersModel');
 
 router.post("/register", passport.authenticate("signupLocalStrategy", {
     failureRedirect: "/failed-signup"
@@ -38,6 +39,15 @@ router.get("/logout", async (req, res) => {
         });
     } catch (error) {
         res.render("profile", { error: "No se pudo cerrar la sesion" });
+    }
+});
+
+router.get('/current', (req, res) => {
+    if (req.isAuthenticated()) {
+        const currentUser = req.user;
+        res.json(currentUser);
+    } else {
+        res.json({ message: 'No hay usuario actual' });
     }
 });
 

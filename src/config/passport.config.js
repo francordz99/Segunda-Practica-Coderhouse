@@ -9,17 +9,17 @@ const createHash = (password) => {
     return bcrypt.hashSync(password, 10);
 };
 
-const isPasswordValid = (contrasena, user) => {
-    return bcrypt.compareSync(contrasena, user.contrasena);
+const isPasswordValid = (password, user) => {
+    return bcrypt.compareSync(password, user.password);
 }
 
 const initializePassport = () => {
     passport.use("signupLocalStrategy", new localStrategy({
         passReqToCallback: true,
         usernameField: "email",
-        passwordField: "contrasena",
+        passwordField: "password",
     }, async (req, username, password, done) => {
-        const { nombre } = req.body;
+        const { first_name, last_name } = req.body;
         try {
             const user = await usersModel.findOne({ email: username });
             if (user) {
@@ -27,9 +27,10 @@ const initializePassport = () => {
                 return done(null, false);
             }
             const newUser = new usersModel({
-                nombre,
+                first_name,
+                last_name,
                 email: username,
-                contrasena: createHash(password),
+                password: createHash(password),
             });
             console.log(newUser);
             await newUser.save();
@@ -51,7 +52,7 @@ const initializePassport = () => {
 
     passport.use("loginLocalStrategy", new localStrategy({
         usernameField: "email",
-        passwordField: "contrasena",
+        passwordField: "password",
     }, async (username, password, done) => {
         try {
             const user = await usersModel.findOne({ email: username });

@@ -2,12 +2,13 @@ const mongoose = require('mongoose');
 const usersCollection = "users";
 
 const userSchema = new mongoose.Schema({
-    nombre: String,
-    apellido: String,
-    edad: Number,
-    email: String,
-    contrasena: String,
-    rol: String
+    first_name: String,
+    last_name: String,
+    age: Number,
+    email: { type: String, unique: true },
+    password: String,
+    cart: { type: mongoose.Schema.Types.ObjectId, ref: 'Carts' },
+    role: { type: String, default: 'user' },
 });
 
 module.exports = {
