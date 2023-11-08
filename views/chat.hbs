@@ -1,0 +1,54 @@
+<div>
+    <h1>Chat</h1>
+    <div id="chat-container">
+        <ul id="messages"></ul>
+        <input type="text" id="message-input" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    function displayMessage(sender, content) {
+        const messagesContainer = document.getElementById('messages');
+        const listItem = document.createElement('li');
+        listItem.textContent = `${sender}: ${content}`;
+        messagesContainer.appendChild(listItem);
+    }
+
+    async function sendMessage() {
+        const user = "user@example.com";
+        const message = document.getElementById('message-input').value;
+
+        if (message) {
+            const response = await fetch('/api/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    sender: user,
+                    message: message
+                })
+            });
+
+            if (response.ok) {
+                loadMessages();
+                document.getElementById('message-input').value = '';
+            }
+        }
+    }
+    async function loadMessages() {
+        const response = await fetch('/api/messages');
+        const messages = await response.json();
+
+        const messagesContainer = document.getElementById('messages');
+        messagesContainer.innerHTML = '';
+
+        messages.forEach((message) => {
+            displayMessage(message.sender, message.content);
+        });
+    }
+
+    loadMessages();
+</script>
